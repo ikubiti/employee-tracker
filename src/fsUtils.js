@@ -34,11 +34,5 @@ const readFromFile = async (directory, file) => {
   return await readFile(fullPath, { encoding: 'utf8' });
 };
 
-const clearConsole = () => {
-  console.clear();
-  // Clears the console buffer
-  console.log("\x1b[3J");
-};
 
-
-module.exports = { readFromFile, clearConsole };
+module.exports = { readFromFile };
