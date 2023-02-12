@@ -20,12 +20,12 @@ let result;
 // Run the application
 const init = async () => {
 	utils.clearConsole();
-
 	utils.showBlue('Main Menu');
-	result = await prompt(utils.getUserRequest()).then((answer) => answer.option);
-	utils.showGreen(result[1]);
 
-	switch (result[0]) {
+	const response = await prompt(utils.getUserRequest()).then((answer) => answer.option);
+	utils.showGreen(response[1]);
+
+	switch (response[0]) {
 		case 'viewEmployees':
 			result = await dbConnection.getEmployees();
 			console.table(result);
@@ -88,7 +88,7 @@ const init = async () => {
 			break;
 
 		case 'addDepartment':
-
+			await addDepartment(response[1]);
 			break;
 
 		case 'deleteDepartment':
@@ -105,12 +105,34 @@ const init = async () => {
 			return;
 	}
 
-	result = await prompt(utils.pauseApplication()).then((answer) => answer.option);
+	await pauseApplication();
 	return await init();
 };
 
+const addDepartment = async (banner) => {
+	result = await prompt(utils.addDepartment()).then((answer) => answer.department);
+	let newDepartment = { name: result };
+	result = await dbConnection.addDepartment(newDepartment);
+	utils.showBlue(banner);
+	if (result) {
+		utils.displayGreen(`${newDepartment.name} Successfully Added`);
+		return;
+	}
+
+	// Department name already exists
+	utils.displayRed(`${newDepartment.name} already exists, please try another name!`);
+	await pauseApplication();
+	utils.showBlue(banner);
+	return await addDepartment(banner);
+};
+
+const pauseApplication = async () => {
+	return await prompt(utils.pauseApplication()).then((answer) => answer.option);
+}
+
+
 // Guide the user through the team creation process
-async function runApp() {
+const runApp = async () => {
 	dbConnection = await new Database(true);
 	// Run the application
 	utils.showYellow('Employee Tracker');

@@ -11,11 +11,13 @@ const inquirer = require('inquirer');
 const figOptions = [
 	{
 		horizontalLayout: 'full',
+		verticalLayout: 'full',
 		width: 200,
 		whitespaceBreak: true
 	},
 	{
 		horizontalLayout: 'fitted',
+		verticalLayout: 'full',
 		width: 100,
 		whitespaceBreak: true
 	}
@@ -25,11 +27,11 @@ const figOptions = [
 const appPrompt = {
 	viewEmployees: 'View All Employees',
 	addEmployees: 'Add a new Employee',
-	updateRole: 'Update Employee Role',
-	updateManager: 'Update Employee Manager',
-	summaryManager: 'View Summary of Employees Under Each Manager',
+	updateRole: 'Update an Employee Role',
+	updateManager: 'Update an Employee Manager',
+	summaryManager: 'View the Summary of Employees Under Each Manager',
 	employeeManager: 'View Employees by Manager',
-	summaryDepartment: 'View Summary of Employees Under Each Department',
+	summaryDepartment: 'View the Summary of Employees Under Each Department',
 	employeeDepartment: 'View Employees by Department',
 	deleteEmployee: 'Delete an Employee',
 	viewRoles: 'View All Roles',
@@ -76,6 +78,7 @@ const mainTable = [
 	appPrompt.updateRole,
 	appPrompt.updateManager,
 	appPrompt.summaryManager,
+	appPrompt.summaryDepartment,
 	appPrompt.employeeManager,
 	appPrompt.employeeDepartment,
 	appPrompt.deleteEmployee,
@@ -154,18 +157,41 @@ const getUserRequest = () => {
 	];
 };
 
+const addDepartment = () => {
+	return [
+		{
+			type: 'input',
+			name: 'department',
+			message: displayCyan('What is the name of the new department?'),
+			validate: checkInput
+		}
+	];
+};
+
 const pauseApplication = () => {
 	return [
 		{
 			type: 'input',
 			name: 'key',
-			message: displayCyan('Press any key to continue...'),
+			message: displayCyan('Press "ENTER" key to continue...'),
 			waitUserInput: true,
 		}
 	];
 };
 
+// check for empty inputs
+const checkInput = (value) => {
+	let val = value;
+	if (value instanceof Array) {
+		val = value.join(', ');
+	}
 
+	if (val.trim() || val.trim().length > 0) {
+		return true;
+	}
+
+	return displayRed('Please provide a valid input!!!');
+};
 
 
 
@@ -181,5 +207,6 @@ module.exports = {
 	displayGreen,
 	displayRed,
 	getUserRequest,
-	pauseApplication
+	pauseApplication,
+	addDepartment
 };
