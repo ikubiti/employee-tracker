@@ -3,12 +3,10 @@ const Database = require('../lib/database');
 const utils = require('./utils');
 const inquirer = require('inquirer');
 const prompt = inquirer.createPromptModule();
-const showTable = require('console.table');
 
 // The database connection object
 let dbConnection = null;
 let result;
-
 
 // Run the application
 const init = async () => {
@@ -18,6 +16,7 @@ const init = async () => {
 	const response = await prompt(utils.getUserRequest()).then((answer) => answer.option);
 	utils.showGreen(response[1]);
 
+	// Process teh user's response
 	switch (response[0]) {
 		case 'viewEmployees':
 			result = await dbConnection.getEmployees();
@@ -93,8 +92,11 @@ const init = async () => {
 			console.table(result);
 			break;
 
-		// Exit the application
+		// Close the database connection and exit the application
 		default:
+			utils.showBlue('... closing database connection');
+			await dbConnection.closeConnection();
+			await utils.waitUser(1.5);
 			return;
 	}
 
@@ -104,7 +106,6 @@ const init = async () => {
 
 const addDepartment = async (banner) => {
 	result = await prompt(utils.addDepartment()).then((answer) => answer.department);
-	await pauseApplication();
 	let newDepartment = { name: result };
 	result = await dbConnection.addDepartment(newDepartment);
 	utils.showBlue(banner);
@@ -238,10 +239,6 @@ const updateEmployeeManager = async (banner) => {
 	const managers = await dbConnection.getValidEmployees();
 
 	result = await prompt(utils.updateEmployeeManager(employees, managers)).then((answer) => answer);
-	console.log(JSON.stringify(result));
-	await pauseApplication();
-
-
 	await dbConnection.updateManager(result);
 	utils.showBlue(banner);
 	utils.displayGreen(`The manager of ${result.name} was successfully updated!`);
@@ -266,7 +263,7 @@ const runApp = async () => {
 	dbConnection = await new Database();
 	// Run the application
 	utils.showYellow(' Employee Tracker');
-	utils.displayGreen('\n\n\tInitializing the application...\n');
+	utils.displayGreen('\tInitializing the application...\n');
 	await utils.waitUser(1.5);
 	await init();
 	utils.showRed('GOODBYE...');

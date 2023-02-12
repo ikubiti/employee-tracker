@@ -1,12 +1,10 @@
-
-const { printTable } = require('console-table-printer');
+// Import the necessary modules.
+const inquirer = require('inquirer');
 const showTable = require('console.table');
-
 const chalk = require('chalk');
 const figlet = require('figlet');
 const { log } = require('console');
 const timer = require("timers/promises");
-const inquirer = require('inquirer');
 
 const figOptions = [
 	{
@@ -27,8 +25,8 @@ const figOptions = [
 const appPrompt = {
 	viewEmployees: 'View All Employees',
 	addEmployees: 'Add a new Employee',
-	updateRole: 'Update an Employee Role',
-	updateManager: 'Update an Employee Manager',
+	updateRole: "Update an Employee's Role",
+	updateManager: "Update an Employee's Manager",
 	summaryManager: 'View the Summary of Employees Under Each Manager',
 	employeeManager: 'View Employees by Manager',
 	summaryDepartment: 'View the Summary of Employees Under Each Department',
@@ -79,6 +77,7 @@ const clearConsole = () => {
 };
 
 const displayBlue = (text) => {
+	newLine();
 	log(chalk.blue(text));
 };
 
@@ -99,10 +98,12 @@ const textRed = (text) => {
 };
 
 const displayGreen = (text) => {
+	newLine();
 	log(chalk.green(text));
 };
 
 const displayRed = (text) => {
+	newLine();
 	log(chalk.red(text));
 };
 
@@ -110,23 +111,26 @@ const displayRed = (text) => {
 const showRed = (text) => {
 	clearConsole();
 	log(chalk.bold.red(figlet.textSync(text, figOptions[1])));
+	newLine();
 };
 
 const showYellow = (text) => {
 	clearConsole();
 	log(chalk.bold.yellow(figlet.textSync(text, figOptions[0])));
+	newLine();
 };
 
 const showGreen = (text) => {
 	clearConsole();
 	log(chalk.bold.green(figlet.textSync(text, figOptions[0])));
+	newLine();
 };
 
 const showBlue = (text) => {
 	clearConsole();
 	log(chalk.bold.blue(figlet.textSync(text, figOptions[0])));
+	newLine();
 };
-
 
 // Pause the application for a specified amount of time
 const waitUser = async (time) => {
@@ -328,7 +332,7 @@ const updateEmployeeRole = (roles, employees) => {
 		{
 			type: 'list',
 			name: 'name',
-			message: textCustom("Select Employee to update role!"),
+			message: textCustom("Select Employee to update their role!"),
 			pageSize: 25,
 			choices: allEmployees,
 			waitUserInput: true,
@@ -336,7 +340,7 @@ const updateEmployeeRole = (roles, employees) => {
 		{
 			type: 'list',
 			name: 'role',
-			message: textCustom("Select Employee's new role!"),
+			message: textCustom("Select the Employee's new role!"),
 			pageSize: 25,
 			choices: allRoles,
 			waitUserInput: true,
@@ -350,16 +354,20 @@ const updateEmployeeManager = (employees, managers) => {
 	let allEmployees = getArray(employees, 'Employees');
 	let allManagers = getArray(managers, 'Employees');
 	// add None to managers
+	allManagers.unshift('None');
 
 	const questions = [
 		{
 			type: 'list',
 			name: 'name',
-			message: textCustom("Select Employee to update manager!"),
+			message: textCustom("Select the Employee you want to change their manager!"),
 			pageSize: 25,
 			choices: allEmployees,
 			filter: (val) => {
-				// Placeholder - remove selected employee
+				// Remove selected employee from list
+				if (allManagers.includes(val)) {
+					allManagers.splice(allManagers.indexOf(val), 1);
+				}
 				return val;
 			},
 			waitUserInput: true,
@@ -370,14 +378,6 @@ const updateEmployeeManager = (employees, managers) => {
 			message: textCustom("Select Employee's new manager!"),
 			pageSize: 25,
 			choices: allManagers,
-			filter: (val) => {
-				// Placeholder - set None selection to null;
-				if (val === 'None') {
-					return 'null';
-				}
-
-				return val;
-			},
 			waitUserInput: true,
 		}
 	];
@@ -410,7 +410,7 @@ const updateRoleSalary = (roles) => {
 }
 
 const pauseApplication = () => {
-	log();
+	newLine();
 	return [
 		{
 			type: 'input',
@@ -420,6 +420,8 @@ const pauseApplication = () => {
 		}
 	];
 };
+
+const newLine = () => log();
 
 // check for empty inputs
 const checkInput = (value) => {
