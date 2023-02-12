@@ -3,16 +3,14 @@ const Database = require('../lib/database');
 const utils = require('./utils');
 const inquirer = require('inquirer');
 const prompt = inquirer.createPromptModule();
-
-
-const fileReader = require('./fsUtils');
-const { printTable } = require('console-table-printer');
+// const { printTable } = require('console-table-printer');
 const showTable = require('console.table');
 
-const chalk = require('chalk');
-const figlet = require('figlet');
-const { log } = require('console');
+// const chalk = require('chalk');
+// const figlet = require('figlet');
+// const { log } = require('console');
 
+// The database connection object
 let dbConnection = null;
 let result;
 
@@ -32,7 +30,7 @@ const init = async () => {
 			break;
 
 		case 'addEmployees':
-
+			await addEmployee(response[1]);
 			break;
 
 		case 'updateRole':
@@ -71,7 +69,7 @@ const init = async () => {
 			break;
 
 		case 'addRole':
-
+			await addRole(response[1]);
 			break;
 
 		case 'updateSalary':
@@ -120,12 +118,59 @@ const addDepartment = async (banner) => {
 	}
 
 	// Department name already exists
-	utils.displayRed(`${newDepartment.name} already exists, please try another name!`);
+	utils.displayRed(`The department "${newDepartment.name}" already exists, please try another name!`);
 	await pauseApplication();
 	utils.showBlue(banner);
 	return await addDepartment(banner);
 };
 
+const addRole = async (banner) => {
+	const departments = await dbConnection.getDepartments();
+	result = await prompt(utils.addRole(departments)).then((answer) => answer);
+	let newRole = {
+		title: result.title,
+		salary: result.salary,
+		department: result.department
+	};
+	result = await dbConnection.addRole(newRole);
+	utils.showBlue(banner);
+	if (result) {
+		utils.displayGreen(`${newRole.title} Successfully Added`);
+		return;
+	}
+
+	// Job Title name already exists
+	utils.displayRed(`The job title "${newRole.title}" already exists, please try another name!`);
+	await pauseApplication();
+	utils.showBlue(banner);
+	return await addRole(banner);
+};
+
+const addEmployee = async (banner) => {
+	const roles = await dbConnection.getRoles();
+	const employees = await dbConnection.getValidEmployees();
+	result = await prompt(utils.addEmployee(roles, employees)).then((answer) => answer);
+	let newEmployee = {
+		firstName: result.firstName,
+		lastName: result.lastName,
+		role: result.role,
+		manager: result.manager
+	};
+	result = await dbConnection.addEmployee(newEmployee);
+	utils.showBlue(banner);
+	if (result) {
+		utils.displayGreen(`${newEmployee.firstName} ${newEmployee.lastName} Successfully Added`);
+		return;
+	}
+
+	// Department name already exists
+	utils.displayRed(`An employee with the name "${newEmployee.firstName} ${newEmployee.lastName}" already exists, please try another name!`);
+	await pauseApplication();
+	utils.showBlue(banner);
+	return await addDepartment(banner);
+};
+
+// Allow the user to read the application feedback
 const pauseApplication = async () => {
 	return await prompt(utils.pauseApplication()).then((answer) => answer.option);
 }
@@ -133,7 +178,7 @@ const pauseApplication = async () => {
 
 // Guide the user through the team creation process
 const runApp = async () => {
-	dbConnection = await new Database(true);
+	dbConnection = await new Database();
 	// Run the application
 	utils.showYellow('Employee Tracker');
 	await utils.waitUser(2);

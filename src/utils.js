@@ -96,10 +96,22 @@ const displayBlue = (text) => {
 	log(chalk.blue(text));
 };
 
-const displayCyan = (text) => {
-	log(chalk.cyan(text));
+const textBlue = (text) => {
+	return chalk.blue(text);
 };
 
+const textMagenta = (text) => {
+	return chalk.magenta(text);
+};
+
+const textCustom = (text) => {
+	return chalk.blueBright(text);
+	// return chalk.rgb(252, 128, 75)(text);
+};
+
+const textRed = (text) => {
+	return chalk.red(text);
+};
 
 const displayGreen = (text) => {
 	log(chalk.green(text));
@@ -142,7 +154,7 @@ const getUserRequest = () => {
 		{
 			type: 'list',
 			name: 'option',
-			message: displayCyan('What would you like to do?'),
+			message: textMagenta('What would you like to do?'),
 			pageSize: 25,
 			choices: mainTable,
 			filter: (val) => {
@@ -162,10 +174,81 @@ const addDepartment = () => {
 		{
 			type: 'input',
 			name: 'department',
-			message: displayCyan('What is the name of the new department?'),
+			message: textCustom('What is the name of the new department?'),
 			validate: checkInput
 		}
 	];
+};
+
+const addRole = (departments) => {
+	let allDepartments = getArray(departments, 'Department_Name');
+	const questions = [
+		{
+			type: 'input',
+			name: 'title',
+			message: textCustom('What is the name of the new role?'),
+			validate: checkInput,
+			waitUserInput: true,
+		},
+		{
+			type: 'input',
+			name: 'salary',
+			message: textCustom('What is the annual salary of the role?'),
+			validate: checkNumber,
+			filter: filterInput,
+			waitUserInput: true,
+		},
+		{
+			type: 'list',
+			name: 'department',
+			message: textCustom('Which department does this role belong to?'),
+			pageSize: 20,
+			choices: allDepartments,
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
+};
+
+const addEmployee = (roles, employees) => {
+	let allRoles = getArray(roles, 'Job Title');
+	let allEmployees = getArray(employees, 'Employees');
+
+	const questions = [
+		{
+			type: 'input',
+			name: 'firstName',
+			message: textCustom("What is the employee's first name?"),
+			validate: checkInput,
+			waitUserInput: true,
+		},
+		{
+			type: 'input',
+			name: 'lastName',
+			message: textCustom("What is the employee's last name?"),
+			validate: checkInput,
+			waitUserInput: true,
+		},
+		{
+			type: 'list',
+			name: 'role',
+			message: textCustom("What is the employee's role?"),
+			pageSize: 25,
+			choices: allRoles,
+			waitUserInput: true,
+		},
+		{
+			type: 'list',
+			name: 'manager',
+			message: textCustom("Who is the employee's manager?"),
+			pageSize: 25,
+			choices: allEmployees,
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
 };
 
 const pauseApplication = () => {
@@ -173,7 +256,7 @@ const pauseApplication = () => {
 		{
 			type: 'input',
 			name: 'key',
-			message: displayCyan('Press "ENTER" key to continue...'),
+			message: textBlue('Press "ENTER" key to continue...'),
 			waitUserInput: true,
 		}
 	];
@@ -190,9 +273,36 @@ const checkInput = (value) => {
 		return true;
 	}
 
-	return displayRed('Please provide a valid input!!!');
+	return textRed('Please provide a valid input!!!');
 };
 
+// Filter input for valid numbers;
+const filterInput = (value) => {
+	let val = parseInt(value);
+	if (val) {
+		return val;
+	}
+
+	return '';
+};
+
+// validates number inputs
+const checkNumber = (value) => {
+	if (typeof value === 'number') {
+		return true;
+	}
+
+	return textRed('Please provide a valid Salary value!!!');
+};
+
+const getArray = (tableData, target) => {
+	let ans = [];
+	tableData.forEach(element => {
+		ans.push(element[target]);
+	});
+
+	return ans;
+}
 
 
 module.exports = {
@@ -203,10 +313,11 @@ module.exports = {
 	showBlue,
 	waitUser,
 	displayBlue,
-	displayCyan,
 	displayGreen,
 	displayRed,
 	getUserRequest,
 	pauseApplication,
-	addDepartment
+	addDepartment,
+	addRole,
+	addEmployee,
 };
