@@ -43,20 +43,6 @@ const appPrompt = {
 	deleteDepartment: 'Delete a Department',
 	utilizedBudget: 'View Utilized Budget',
 	exitApp: 'Exit Application',
-
-
-	// editMember: fontYellow('Edit an existing Team Member?'),
-
-	// editMember: fontYellow('Edit an existing Team Member?'),
-	// finishTeam: fontYellow('Finish Team Building?'),
-	// inputValidation: fontRed('Please provide a valid input'),
-	// idValidation: fontRed('Please provide a different "Id number", current Id number already in use'),
-	// emailValidation: fontRed('Please provide a valid email!!!'),
-	// validMember: fontBlue('New Team Member Successfully Created!\n'),
-	// impossible: fontRed('HOW DID WE GET HERE!!!'),
-	// editPrompt: fontYellow('Select the members you wish to edit or update:'),
-	// editMembers: fontYellow('Choose the properties you wish to edit:'),
-	// noMembers: fontRed('\nPlease add members to your team first!!!\n'),
 };
 
 
@@ -106,7 +92,6 @@ const textMagenta = (text) => {
 
 const textCustom = (text) => {
 	return chalk.blueBright(text);
-	// return chalk.rgb(252, 128, 75)(text);
 };
 
 const textRed = (text) => {
@@ -251,12 +236,98 @@ const addEmployee = (roles, employees) => {
 	return questions;
 };
 
+const deleteDepartment = (departments) => {
+	let allDepartments = getArray(departments, 'Department_Name');
+	const questions = [
+		{
+			type: 'list',
+			name: 'department',
+			message: textCustom('Select the Department to delete?'),
+			pageSize: 20,
+			choices: allDepartments,
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
+
+};
+
+const deleteRole = (roles) => {
+	let allRoles = getArray(roles, 'Job Title');
+	const questions = [
+		{
+			type: 'list',
+			name: 'role',
+			message: textCustom('Select the Role to delete?'),
+			pageSize: 20,
+			choices: allRoles,
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
+};
+
+
+const deleteEmployee = (employees) => {
+	let allEmployees = getArray(employees, 'Employees');
+	const questions = [
+		{
+			type: 'list',
+			name: 'employee',
+			message: textCustom('Select the Employee to delete?'),
+			pageSize: 20,
+			choices: allEmployees,
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
+};
+
+const viewEmployeesByManager = (employees) => {
+	let allManagers = getArray(employees, 'Managers');
+	const questions = [
+		{
+			type: 'list',
+			name: 'manager',
+			message: textCustom("Select the Manager's employee to view?"),
+			pageSize: 20,
+			choices: allManagers,
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
+};
+
+
+const viewEmployeesByDepartment = (departments) => {
+	let allDepartments = getArray(departments, 'Department_Name');
+	const questions = [
+		{
+			type: 'list',
+			name: 'department',
+			message: textCustom("Select the Department's employees to view?"),
+			pageSize: 20,
+			choices: allDepartments,
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
+
+};
+
+
 const pauseApplication = () => {
+	log();
 	return [
 		{
 			type: 'input',
 			name: 'key',
-			message: textBlue('Press "ENTER" key to continue...'),
+			message: textBlue('\tPress "ENTER" key to continue...'),
 			waitUserInput: true,
 		}
 	];
@@ -320,4 +391,9 @@ module.exports = {
 	addDepartment,
 	addRole,
 	addEmployee,
+	deleteDepartment,
+	deleteRole,
+	deleteEmployee,
+	viewEmployeesByManager,
+	viewEmployeesByDepartment
 };
