@@ -6,8 +6,8 @@ const { resolve } = require('node:path');
 const statPromise = util.promisify(fs.stat);
 
 /**
- *  Function to write data to the JSON file given a destination and some content
- *  @param {string} file The file you want to write to.
+ *  Function to read the contents of a file given a destination and filename
+ *  @param {string} file The file you want to read from.
  *  @param {object} directory The relative path to the file.
  *  @returns {string} The contents of the file.
  */

@@ -16,7 +16,7 @@ const init = async () => {
 	const response = await prompt(utils.getUserRequest()).then((answer) => answer.option);
 	utils.showGreen(response[1]);
 
-	// Process teh user's response
+	// Process the user's response
 	switch (response[0]) {
 		case 'viewEmployees':
 			result = await dbConnection.getEmployees();
@@ -87,6 +87,10 @@ const init = async () => {
 			await deleteDepartment();
 			break;
 
+		case 'utilizedDepartment':
+			await viewUtilizedByDepartment(response[1]);
+			break;
+
 		case 'utilizedBudget':
 			result = await dbConnection.getUtilizedBudget();
 			console.table(result);
@@ -104,6 +108,7 @@ const init = async () => {
 	return await init();
 };
 
+// Prompts to add a new department
 const addDepartment = async (banner) => {
 	result = await prompt(utils.addDepartment()).then((answer) => answer.department);
 	let newDepartment = { name: result };
@@ -121,6 +126,7 @@ const addDepartment = async (banner) => {
 	return await addDepartment(banner);
 };
 
+// Prompts to add a new role
 const addRole = async (banner) => {
 	const departments = await dbConnection.getDepartments();
 	result = await prompt(utils.addRole(departments)).then((answer) => answer);
@@ -143,6 +149,7 @@ const addRole = async (banner) => {
 	return await addRole(banner);
 };
 
+// Prompts to add a new employee
 const addEmployee = async (banner) => {
 	const roles = await dbConnection.getRoles();
 	const employees = await dbConnection.getValidEmployees();
@@ -164,9 +171,10 @@ const addEmployee = async (banner) => {
 	utils.displayRed(`An employee with the name "${newEmployee.firstName} ${newEmployee.lastName}" already exists, please try another name!`);
 	await pauseApplication();
 	utils.showBlue(banner);
-	return await addDepartment(banner);
+	return await addEmployee(banner);
 };
 
+// Prompts to delete a department
 const deleteDepartment = async () => {
 	const departments = await dbConnection.getDepartments();
 	const { department } = await prompt(utils.deleteDepartment(departments)).then((answer) => answer);
@@ -181,6 +189,7 @@ const deleteDepartment = async () => {
 	process.exit();
 };
 
+// Prompts to delete a role
 const deleteRole = async () => {
 	const roles = await dbConnection.getRoles();
 	const { role } = await prompt(utils.deleteRole(roles)).then((answer) => answer);
@@ -195,6 +204,7 @@ const deleteRole = async () => {
 	process.exit();
 };
 
+// Prompts to delete an employee
 const deleteEmployee = async () => {
 	const employees = await dbConnection.getFullNames();
 	const { employee } = await prompt(utils.deleteEmployee(employees)).then((answer) => answer);
@@ -209,6 +219,7 @@ const deleteEmployee = async () => {
 	process.exit();
 };
 
+// Prompts to view all employees by manager
 const viewEmployeesByManager = async (banner) => {
 	const managers = await dbConnection.getAllManagers();
 	const { manager } = await prompt(utils.viewEmployeesByManager(managers)).then((answer) => answer);
@@ -217,6 +228,7 @@ const viewEmployeesByManager = async (banner) => {
 	console.table(result);
 };
 
+// Prompts to view all employees by department
 const viewEmployeesByDepartment = async (banner) => {
 	const departments = await dbConnection.getDepartments();
 	const { department } = await prompt(utils.viewEmployeesByDepartment(departments)).then((answer) => answer);
@@ -225,6 +237,17 @@ const viewEmployeesByDepartment = async (banner) => {
 	console.table(result);
 };
 
+
+// Prompts to view utilized budget by department
+const viewUtilizedByDepartment = async (banner) => {
+	const departments = await dbConnection.getDepartments();
+	const { department } = await prompt(utils.viewUtilizedByDepartment(departments)).then((answer) => answer);
+	result = await dbConnection.getDepartmentBudget(department);
+	utils.showBlue(banner);
+	console.table(result);
+};
+
+// Prompts to update an employee's role
 const updateEmployeeRole = async (banner) => {
 	const employees = await dbConnection.getFullNames();
 	const roles = await dbConnection.getRoles();
@@ -234,6 +257,7 @@ const updateEmployeeRole = async (banner) => {
 	utils.displayGreen(`The role of ${result.name} was successfully updated!`);
 };
 
+// Prompts to update an employee's manager
 const updateEmployeeManager = async (banner) => {
 	const employees = await dbConnection.getFullNames();
 	const managers = await dbConnection.getValidEmployees();
@@ -244,6 +268,7 @@ const updateEmployeeManager = async (banner) => {
 	utils.displayGreen(`The manager of ${result.name} was successfully updated!`);
 };
 
+// Prompts to update the salary of any role
 const updateRoleSalary = async (banner) => {
 	const roles = await dbConnection.getRoles();
 	result = await prompt(utils.updateRoleSalary(roles)).then((answer) => answer);
