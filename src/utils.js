@@ -40,16 +40,17 @@ const appPrompt = {
 	addDepartment: 'Add a new Department',
 	deleteDepartment: 'Delete a Department',
 	utilizedBudget: 'View Utilized Budget',
+	utilizedDepartment: 'View Utilized Budget by Department',
 	exitApp: 'Exit Application',
 };
 
-
-
+// Application main menu
 const mainTable = [
 	new inquirer.Separator(' = Department Options = '),
 	appPrompt.viewDepartments,
 	appPrompt.addDepartment,
 	appPrompt.deleteDepartment,
+	appPrompt.utilizedDepartment,
 	appPrompt.utilizedBudget,
 	new inquirer.Separator(' = Role Options = '),
 	appPrompt.viewRoles,
@@ -70,12 +71,14 @@ const mainTable = [
 	appPrompt.exitApp,
 ];
 
+// Reset the console
 const clearConsole = () => {
 	console.clear();
 	// Clears the console buffer
 	console.log("\x1b[3J");
 };
 
+// Display texts in custom colors
 const displayBlue = (text) => {
 	newLine();
 	log(chalk.blue(text));
@@ -138,6 +141,7 @@ const waitUser = async (time) => {
 };
 
 
+// Prompts to get the user choice in the main menu
 const getUserRequest = () => {
 	return [
 		{
@@ -158,6 +162,7 @@ const getUserRequest = () => {
 	];
 };
 
+// Prompts to add a new department
 const addDepartment = () => {
 	return [
 		{
@@ -169,6 +174,7 @@ const addDepartment = () => {
 	];
 };
 
+// Prompts to add a new role
 const addRole = (departments) => {
 	let allDepartments = getArray(departments, 'Department_Name');
 	const questions = [
@@ -200,9 +206,12 @@ const addRole = (departments) => {
 	return questions;
 };
 
+// Prompts to add a new employee
 const addEmployee = (roles, employees) => {
 	let allRoles = getArray(roles, 'Job Title');
 	let allEmployees = getArray(employees, 'Employees');
+	// add None to managers
+	allEmployees.unshift('None');
 
 	const questions = [
 		{
@@ -240,6 +249,7 @@ const addEmployee = (roles, employees) => {
 	return questions;
 };
 
+// Prompts to delete a department
 const deleteDepartment = (departments) => {
 	let allDepartments = getArray(departments, 'Department_Name');
 	const questions = [
@@ -257,6 +267,7 @@ const deleteDepartment = (departments) => {
 
 };
 
+// Prompts to delete a role
 const deleteRole = (roles) => {
 	let allRoles = getArray(roles, 'Job Title');
 	const questions = [
@@ -274,6 +285,7 @@ const deleteRole = (roles) => {
 };
 
 
+// Prompts to delete an employee
 const deleteEmployee = (employees) => {
 	let allEmployees = getArray(employees, 'Employees');
 	const questions = [
@@ -290,6 +302,7 @@ const deleteEmployee = (employees) => {
 	return questions;
 };
 
+// Prompts to view all employees by manager
 const viewEmployeesByManager = (employees) => {
 	let allManagers = getArray(employees, 'Managers');
 	const questions = [
@@ -307,6 +320,7 @@ const viewEmployeesByManager = (employees) => {
 };
 
 
+// Prompts to view all employees by department
 const viewEmployeesByDepartment = (departments) => {
 	let allDepartments = getArray(departments, 'Department_Name');
 	const questions = [
@@ -324,6 +338,25 @@ const viewEmployeesByDepartment = (departments) => {
 
 };
 
+// Prompts to view utilized budget by department
+const viewUtilizedByDepartment = (departments) => {
+	let allDepartments = getArray(departments, 'Department_Name');
+	const questions = [
+		{
+			type: 'list',
+			name: 'department',
+			message: textCustom("Select the Department to view its Utilized Budget!"),
+			pageSize: 20,
+			choices: allDepartments,
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
+
+};
+
+// Prompts to update an employee's role
 const updateEmployeeRole = (roles, employees) => {
 	let allRoles = getArray(roles, 'Job Title');
 	let allEmployees = getArray(employees, 'Employees');
@@ -350,6 +383,7 @@ const updateEmployeeRole = (roles, employees) => {
 	return questions;
 };
 
+// Prompts to update an employee's manager
 const updateEmployeeManager = (employees, managers) => {
 	let allEmployees = getArray(employees, 'Employees');
 	let allManagers = getArray(managers, 'Employees');
@@ -385,6 +419,7 @@ const updateEmployeeManager = (employees, managers) => {
 	return questions;
 };
 
+// Prompts to update the salary of any role
 const updateRoleSalary = (roles) => {
 	let allRoles = getArray(roles, 'Job Title');
 	const questions = [
@@ -409,6 +444,7 @@ const updateRoleSalary = (roles) => {
 	return questions;
 }
 
+// Pause the application until the user is ready to proceed
 const pauseApplication = () => {
 	newLine();
 	return [
@@ -456,6 +492,7 @@ const checkNumber = (value) => {
 	return textRed('Please provide a valid Salary value!!!');
 };
 
+// Generates an array from an object
 const getArray = (tableData, target) => {
 	let ans = [];
 	tableData.forEach(element => {
@@ -486,6 +523,7 @@ module.exports = {
 	deleteEmployee,
 	viewEmployeesByManager,
 	viewEmployeesByDepartment,
+	viewUtilizedByDepartment,
 	updateEmployeeRole,
 	updateEmployeeManager,
 	updateRoleSalary
