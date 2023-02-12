@@ -27,7 +27,8 @@ const init = async () => {
 
 	switch (result[0]) {
 		case 'viewEmployees':
-
+			result = await dbConnection.getEmployees();
+			console.table(result);
 			break;
 
 		case 'addEmployees':
@@ -43,7 +44,8 @@ const init = async () => {
 			break;
 
 		case 'summaryManager':
-
+			result = await dbConnection.summaryByManager();
+			console.table(result);
 			break;
 
 		case 'employeeManager':
@@ -51,7 +53,8 @@ const init = async () => {
 			break;
 
 		case 'summaryDepartment':
-
+			result = await dbConnection.summaryByDepartment();
+			console.table(result);
 			break;
 
 		case 'employeeDepartment':
@@ -63,7 +66,8 @@ const init = async () => {
 			break;
 
 		case 'viewRoles':
-
+			result = await dbConnection.getRoles();
+			console.table(result);
 			break;
 
 		case 'addRole':
@@ -79,7 +83,8 @@ const init = async () => {
 			break;
 
 		case 'viewDepartments':
-
+			result = await dbConnection.getDepartments();
+			console.table(result);
 			break;
 
 		case 'addDepartment':
@@ -91,7 +96,8 @@ const init = async () => {
 			break;
 
 		case 'utilizedBudget':
-
+			result = await dbConnection.getUtilizedBudget();
+			console.table(result);
 			break;
 
 		// Exit the application
