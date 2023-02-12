@@ -320,6 +320,94 @@ const viewEmployeesByDepartment = (departments) => {
 
 };
 
+const updateEmployeeRole = (roles, employees) => {
+	let allRoles = getArray(roles, 'Job Title');
+	let allEmployees = getArray(employees, 'Employees');
+
+	const questions = [
+		{
+			type: 'list',
+			name: 'name',
+			message: textCustom("Select Employee to update role!"),
+			pageSize: 25,
+			choices: allEmployees,
+			waitUserInput: true,
+		},
+		{
+			type: 'list',
+			name: 'role',
+			message: textCustom("Select Employee's new role!"),
+			pageSize: 25,
+			choices: allRoles,
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
+};
+
+const updateEmployeeManager = (employees, managers) => {
+	let allEmployees = getArray(employees, 'Employees');
+	let allManagers = getArray(managers, 'Employees');
+	// add None to managers
+
+	const questions = [
+		{
+			type: 'list',
+			name: 'name',
+			message: textCustom("Select Employee to update manager!"),
+			pageSize: 25,
+			choices: allEmployees,
+			filter: (val) => {
+				// Placeholder - remove selected employee
+				return val;
+			},
+			waitUserInput: true,
+		},
+		{
+			type: 'list',
+			name: 'manager',
+			message: textCustom("Select Employee's new manager!"),
+			pageSize: 25,
+			choices: allManagers,
+			filter: (val) => {
+				// Placeholder - set None selection to null;
+				if (val === 'None') {
+					return 'null';
+				}
+
+				return val;
+			},
+			waitUserInput: true,
+		}
+	];
+
+	return questions;
+};
+
+const updateRoleSalary = (roles) => {
+	let allRoles = getArray(roles, 'Job Title');
+	const questions = [
+		{
+			type: 'list',
+			name: 'title',
+			message: textCustom("Select the Role to update its salary!"),
+			pageSize: 25,
+			choices: allRoles,
+			waitUserInput: true,
+		},
+		{
+			type: 'input',
+			name: 'salary',
+			message: textCustom('What is the new salary of the role?'),
+			validate: checkNumber,
+			filter: filterInput,
+			waitUserInput: true,
+		},
+	];
+
+	return questions;
+}
 
 const pauseApplication = () => {
 	log();
@@ -395,5 +483,8 @@ module.exports = {
 	deleteRole,
 	deleteEmployee,
 	viewEmployeesByManager,
-	viewEmployeesByDepartment
+	viewEmployeesByDepartment,
+	updateEmployeeRole,
+	updateEmployeeManager,
+	updateRoleSalary
 };

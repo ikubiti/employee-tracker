@@ -29,11 +29,11 @@ const init = async () => {
 			break;
 
 		case 'updateRole':
-
+			await updateEmployeeRole(response[1]);
 			break;
 
 		case 'updateManager':
-
+			await updateEmployeeManager(response[1]);
 			break;
 
 		case 'summaryManager':
@@ -68,7 +68,7 @@ const init = async () => {
 			break;
 
 		case 'updateSalary':
-
+			await updateRoleSalary(response[1])
 			break;
 
 		case 'deleteRole':
@@ -222,6 +222,37 @@ const viewEmployeesByDepartment = async (banner) => {
 	result = await dbConnection.getEmployeesByDepartment(department);
 	utils.showBlue(banner);
 	console.table(result);
+};
+
+const updateEmployeeRole = async (banner) => {
+	const employees = await dbConnection.getFullNames();
+	const roles = await dbConnection.getRoles();
+	result = await prompt(utils.updateEmployeeRole(roles, employees)).then((answer) => answer);
+	await dbConnection.updateEmployeeRole(result);
+	utils.showBlue(banner);
+	utils.displayGreen(`The role of ${result.name} was successfully updated!`);
+};
+
+const updateEmployeeManager = async (banner) => {
+	const employees = await dbConnection.getFullNames();
+	const managers = await dbConnection.getValidEmployees();
+
+	result = await prompt(utils.updateEmployeeManager(employees, managers)).then((answer) => answer);
+	console.log(JSON.stringify(result));
+	await pauseApplication();
+
+
+	await dbConnection.updateManager(result);
+	utils.showBlue(banner);
+	utils.displayGreen(`The manager of ${result.name} was successfully updated!`);
+};
+
+const updateRoleSalary = async (banner) => {
+	const roles = await dbConnection.getRoles();
+	result = await prompt(utils.updateRoleSalary(roles)).then((answer) => answer);
+	await dbConnection.updateRoleSalary(result);
+	utils.showBlue(banner);
+	utils.displayGreen(`The salary of ${result.title} was successfully updated!`);
 };
 
 // Allow the user to read the application feedback
