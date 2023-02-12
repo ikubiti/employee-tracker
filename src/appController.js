@@ -3,12 +3,7 @@ const Database = require('../lib/database');
 const utils = require('./utils');
 const inquirer = require('inquirer');
 const prompt = inquirer.createPromptModule();
-// const { printTable } = require('console-table-printer');
 const showTable = require('console.table');
-
-// const chalk = require('chalk');
-// const figlet = require('figlet');
-// const { log } = require('console');
 
 // The database connection object
 let dbConnection = null;
@@ -18,7 +13,7 @@ let result;
 // Run the application
 const init = async () => {
 	utils.clearConsole();
-	utils.showBlue('Main Menu');
+	utils.showBlue('-Main Menu-');
 
 	const response = await prompt(utils.getUserRequest()).then((answer) => answer.option);
 	utils.showGreen(response[1]);
@@ -47,7 +42,7 @@ const init = async () => {
 			break;
 
 		case 'employeeManager':
-
+			await viewEmployeesByManager(response[1]);
 			break;
 
 		case 'summaryDepartment':
@@ -56,11 +51,11 @@ const init = async () => {
 			break;
 
 		case 'employeeDepartment':
-
+			await viewEmployeesByDepartment(response[1]);
 			break;
 
 		case 'deleteEmployee':
-
+			await deleteEmployee();
 			break;
 
 		case 'viewRoles':
@@ -77,7 +72,7 @@ const init = async () => {
 			break;
 
 		case 'deleteRole':
-
+			await deleteRole();
 			break;
 
 		case 'viewDepartments':
@@ -90,7 +85,7 @@ const init = async () => {
 			break;
 
 		case 'deleteDepartment':
-
+			await deleteDepartment();
 			break;
 
 		case 'utilizedBudget':
@@ -109,6 +104,7 @@ const init = async () => {
 
 const addDepartment = async (banner) => {
 	result = await prompt(utils.addDepartment()).then((answer) => answer.department);
+	await pauseApplication();
 	let newDepartment = { name: result };
 	result = await dbConnection.addDepartment(newDepartment);
 	utils.showBlue(banner);
@@ -170,6 +166,64 @@ const addEmployee = async (banner) => {
 	return await addDepartment(banner);
 };
 
+const deleteDepartment = async () => {
+	const departments = await dbConnection.getDepartments();
+	const { department } = await prompt(utils.deleteDepartment(departments)).then((answer) => answer);
+	result = await dbConnection.deleteDepartment(department);
+	if (result === 2) {
+		utils.displayGreen(`${department} Successfully Deleted`);
+		return;
+	}
+
+	utils.displayRed(`An inexplicable error occurred while deleting "${department}.\nThe Application will shut down to avoid corrupting the database!`);
+	await pauseApplication();
+	process.exit();
+};
+
+const deleteRole = async () => {
+	const roles = await dbConnection.getRoles();
+	const { role } = await prompt(utils.deleteRole(roles)).then((answer) => answer);
+	result = await dbConnection.deleteRole(role);
+	if (result === 2) {
+		utils.displayGreen(`${role} Successfully Deleted`);
+		return;
+	}
+
+	utils.displayRed(`An inexplicable error occurred while deleting "${role}.\nThe Application will shut down to avoid corrupting the database!`);
+	await pauseApplication();
+	process.exit();
+};
+
+const deleteEmployee = async () => {
+	const employees = await dbConnection.getFullNames();
+	const { employee } = await prompt(utils.deleteEmployee(employees)).then((answer) => answer);
+	result = await dbConnection.deleteEmployee(employee);
+	if (result === 2) {
+		utils.displayGreen(`${employee} Successfully Deleted`);
+		return;
+	}
+
+	utils.displayRed(`An inexplicable error occurred while deleting "${employee}.\nThe Application will shut down to avoid corrupting the database!`);
+	await pauseApplication();
+	process.exit();
+};
+
+const viewEmployeesByManager = async (banner) => {
+	const managers = await dbConnection.getAllManagers();
+	const { manager } = await prompt(utils.viewEmployeesByManager(managers)).then((answer) => answer);
+	result = await dbConnection.getEmployeesByManager(manager);
+	utils.showBlue(banner);
+	console.table(result);
+};
+
+const viewEmployeesByDepartment = async (banner) => {
+	const departments = await dbConnection.getDepartments();
+	const { department } = await prompt(utils.viewEmployeesByDepartment(departments)).then((answer) => answer);
+	result = await dbConnection.getEmployeesByDepartment(department);
+	utils.showBlue(banner);
+	console.table(result);
+};
+
 // Allow the user to read the application feedback
 const pauseApplication = async () => {
 	return await prompt(utils.pauseApplication()).then((answer) => answer.option);
@@ -180,8 +234,9 @@ const pauseApplication = async () => {
 const runApp = async () => {
 	dbConnection = await new Database();
 	// Run the application
-	utils.showYellow('Employee Tracker');
-	await utils.waitUser(2);
+	utils.showYellow(' Employee Tracker');
+	utils.displayGreen('\n\n\tInitializing the application...\n');
+	await utils.waitUser(1.5);
 	await init();
 	utils.showRed('GOODBYE...');
 }
