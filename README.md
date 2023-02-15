@@ -1,9 +1,5 @@
 # EMPLOYEE TRACKER
 
-A Node.js application that uses MySQL to manage a company's employee database from the command-line.
-
-https://drive.google.com/file/d/1IMjBwmN0RFQjGDPfkVqGBY1RdnFp5rCl/view?usp=share_link
-
 ![license](https://img.shields.io/badge/License-MIT-brightgreen) ![github](https://img.shields.io/badge/Github-ikubiti-red) ![stack](https://img.shields.io/badge/Javascript-☑️-blue) ![stack](https://img.shields.io/badge/Node-✔️-blueviolet) ![stack](https://img.shields.io/badge/Git-✔️-9cf) ![stack](https://img.shields.io/badge/MySql-☑️-blue)
 
 ## Description
